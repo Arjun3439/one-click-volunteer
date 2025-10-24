@@ -25,6 +25,9 @@ export const supabase = isConfigured
           select: () => ({
             single: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } })
           })
+        }),
+        update: () => ({
+          eq: () => Promise.resolve({ data: null, error: { message: 'Supabase not configured' } })
         })
       }),
       storage: {

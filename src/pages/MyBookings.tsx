@@ -3,12 +3,11 @@ import { useApp } from "@/contexts/AppContext";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { supabase } from '@/lib/supabase';
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+
 
 interface Volunteer {
   name: string;
-  image_url: string;
-  hourly_rate: number;
+  hourlyRate: number;
 }
 
 interface Booking {
@@ -106,16 +105,13 @@ const MyBookings = () => {
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <Avatar>
-                        <AvatarImage src={volunteer?.image_url} alt={volunteer?.name} />
-                        <AvatarFallback>{volunteer?.name?.[0]}</AvatarFallback>
-                      </Avatar>
+                      
                       <div>
                         <h2 className="text-xl font-semibold">
                           {volunteer?.name || "Unknown Volunteer"}
                         </h2>
                         <p className="text-muted-foreground">
-                          Rate: ₹{volunteer?.hourly_rate}/hour
+                          Rate: ₹{volunteer?.hourlyRate}/hour
                         </p>
                         <p className="text-muted-foreground">
                           Date: {new Date(booking.date).toLocaleDateString()}

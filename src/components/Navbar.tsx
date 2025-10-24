@@ -13,6 +13,7 @@ import {
   LogOut,
   Heart
 } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const Navbar = () => {
   const { state } = useApp();
@@ -79,9 +80,12 @@ const Navbar = () => {
             {state.isAuthenticated ? (
               <>
                 <div className="hidden md:flex items-center space-x-2">
-                  <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                    <User className="w-4 h-4 text-primary" />
-                  </div>
+                  <Avatar className="w-8 h-8">
+                    <AvatarImage src={state.user?.imageUrl} />
+                    <AvatarFallback>
+                      {state.user?.name?.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
                   <div className="text-sm">
                     <p className="font-medium">{state.user?.name}</p>
                     <p className="text-muted-foreground capitalize">

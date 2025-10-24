@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useApp } from '@/contexts/AppContext';
 import { supabase } from '@/lib/supabase';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Search,
   Star,
@@ -49,11 +48,10 @@ const ClientDashboard = () => {
           email: volunteer.email,
           phone: volunteer.phone,
           bio: volunteer.bio,
-          hourlyRate: volunteer.hourly_rate,
+          hourlyRate: volunteer.hourlyRate,
           availability: volunteer.availability,
           isVerified: volunteer.is_verified,
           skills: volunteer.skills,
-          imageUrl: volunteer.profile_photo_url,
           rating: volunteer.rating,
           totalBookings: volunteer.total_bookings,
         }));
@@ -248,10 +246,7 @@ const ClientDashboard = () => {
                 )}
                 <CardHeader className="pb-4">
                   <div className="flex items-start space-x-4">
-                    <Avatar className="w-16 h-16 rounded-2xl">
-                      <AvatarImage src={volunteer.imageUrl} alt={volunteer.name} />
-                      <AvatarFallback>{volunteer.name?.[0]}</AvatarFallback>
-                    </Avatar>
+                    
                     <div className="flex-1">
                       <div className="flex items-center space-x-2">
                         <CardTitle className="text-lg">{volunteer.name || 'Name not available'}</CardTitle>

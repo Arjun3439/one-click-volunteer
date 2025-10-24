@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { useApp } from '@/contexts/AppContext';
 import { useUser } from '@clerk/clerk-react';
 import { supabase } from '@/lib/supabase';
+import { useToast } from '@/hooks/use-toast';
 import { 
   Edit, 
   Star, 
@@ -17,12 +18,12 @@ import {
   Clock,
   Mail
 } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const VolunteerDashboard = () => {
   const { state, dispatch } = useApp();
   const { user: clerkUser } = useUser();
   const { currentUserProfile: profile } = state;
+  const { toast } = useToast();
   const [bookings, setBookings] = useState([]);
   const [loadingBookings, setLoadingBookings] = useState(true);
   const [totalEarnings, setTotalEarnings] = useState(0);
@@ -107,13 +108,12 @@ const VolunteerDashboard = () => {
             email: updatedProfileData.email,
             phone: updatedProfileData.phone,
             bio: updatedProfileData.bio,
-            hourlyRate: updatedProfileData.hourly_rate,
+            hourlyRate: updatedProfileData.hourlyRate,
             availability: updatedProfileData.availability,
             isVerified: updatedProfileData.is_verified,
             skills: updatedProfileData.skills,
             rating: updatedProfileData.rating,
             totalBookings: updatedProfileData.total_bookings,
-            profilePhoto: updatedProfileData.profile_photo_url,
           };
 
         // 3. Update state
@@ -231,10 +231,7 @@ const VolunteerDashboard = () => {
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
             <div className="flex items-center space-x-4">
-              <Avatar className="h-16 w-16">
-                <AvatarImage src={clerkUser?.imageUrl} alt={profile.name} />
-                <AvatarFallback>{profile.name?.[0]}</AvatarFallback>
-              </Avatar>
+              
               <div>
                 <h1 className="text-3xl font-bold text-gradient mb-2">
                   Welcome back, {profile.name}!

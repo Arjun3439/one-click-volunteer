@@ -147,7 +147,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
               email: data[0].email,
               phone: data[0].phone,
               bio: data[0].bio,
-              hourlyRate: data[0].hourly_rate,
+              hourlyRate: data[0].hourlyRate,
               availability: data[0].availability,
               isVerified: data[0].is_verified,
               skills: data[0].skills,

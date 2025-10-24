@@ -7,6 +7,16 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { useApp } from '@/contexts/AppContext';
+import { UserProfile } from '@clerk/clerk-react';
+import { supabase } from '@/lib/supabase';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   User, 
   Mail, 
@@ -23,6 +33,7 @@ import { useToast } from '@/hooks/use-toast';
 const Profile = () => {
   const { state, dispatch } = useApp();
   const { toast } = useToast();
+  const [isClerkProfileOpen, setIsClerkProfileOpen] = useState(false);
 
   // Form data for volunteer profiles
   const [volunteerFormData, setVolunteerFormData] = useState({
@@ -95,7 +106,7 @@ const Profile = () => {
           name: volunteerFormData.name,
           phone: volunteerFormData.phone,
           bio: volunteerFormData.bio,
-          hourly_rate: volunteerFormData.hourlyRate,
+          hourlyRate: volunteerFormData.hourlyRate,
           availability: volunteerFormData.availability,
         })
         .eq('id', state.currentUserProfile.id);
@@ -183,6 +194,27 @@ const Profile = () => {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  <div className="flex items-center space-x-4 mb-4">
+                    <Avatar className="w-20 h-20">
+                      <AvatarImage src={state.user?.imageUrl} />
+                      <AvatarFallback>
+                        {volunteerFormData.name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="space-y-1">
+                      <Dialog open={isClerkProfileOpen} onOpenChange={setIsClerkProfileOpen}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline">Edit Profile</Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[825px]">
+                          <UserProfile routing="path" path="/profile" />
+                        </DialogContent>
+                      </Dialog>
+                      <p className="text-xs text-muted-foreground">
+                        Edit your profile picture and other details on Clerk.
+                      </p>
+                    </div>
+                  </div>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name</Label>
@@ -385,6 +417,27 @@ const Profile = () => {
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
+                <div className="flex items-center space-x-4 mb-4">
+                  <Avatar className="w-20 h-20">
+                    <AvatarImage src={state.user?.imageUrl} />
+                    <AvatarFallback>
+                      {clientFormData.name.charAt(0)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="space-y-1">
+                    <Dialog open={isClerkProfileOpen} onOpenChange={setIsClerkProfileOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline">Edit Profile</Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[825px]">
+                        <UserProfile routing="path" path="/profile" />
+                      </DialogContent>
+                    </Dialog>
+                    <p className="text-xs text-muted-foreground">
+                      Edit your profile picture and other details on Clerk.
+                    </p>
+                  </div>
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="clientName">Full Name</Label>
                   <Input

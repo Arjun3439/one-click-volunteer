@@ -36,7 +36,7 @@ export default function VolunteerProfilePage() {
             email: data.email,
             phone: data.phone,
             bio: data.bio,
-            hourlyRate: data.hourly_rate,
+            hourlyRate: data.hourlyRate,
             availability: data.availability,
             isVerified: data.is_verified,
             skills: data.skills,

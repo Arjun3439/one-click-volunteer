@@ -17,7 +17,6 @@ import {
   Save,
   Plus,
   X,
-  Upload,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -47,8 +46,6 @@ const VolunteerProfile = () => {
     skills: [] as { id: string; name: string }[],
   });
 
-  const [profilePhoto, setProfilePhoto] = useState < File | null > (null);
-  const [photoPreview, setPhotoPreview] = useState < string | null > (null);
   const [isUploading, setIsUploading] = useState(false);
   const [newSkill, setNewSkill] = useState('');
 
@@ -64,9 +61,6 @@ const VolunteerProfile = () => {
         isVerified: state.currentUserProfile.isVerified,
         skills: state.currentUserProfile.skills || [],
       });
-      setPhotoPreview(state.currentUserProfile.profilePhoto || state.user?.imageUrl || null);
-    } else if (state.user) {
-      setPhotoPreview(state.user.imageUrl || null);
     }
   }, [state.currentUserProfile, state.user]);
 
@@ -74,18 +68,6 @@ const VolunteerProfile = () => {
     setFormData(prev => ({ ...prev,
       [field]: value
     }));
-  };
-
-  const handleFileChange = (e: React.ChangeEvent < HTMLInputElement > ) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      if (file.size > 5 * 1024 * 1024) { // 5MB limit
-        toast({ title: "File too large", description: "Please select a file smaller than 5MB.", variant: "destructive" });
-        return;
-      }
-      setProfilePhoto(file);
-      setPhotoPreview(URL.createObjectURL(file));
-    }
   };
 
   const addSkill = () => {
@@ -111,45 +93,7 @@ const VolunteerProfile = () => {
     setIsUploading(true);
 
     try {
-      // Get the Supabase user ID, which is needed for RLS policies
-      const { data: { user: supabaseUser }, error: authError } = await supabase.auth.getUser();
-      if (authError || !supabaseUser) {
-        throw new Error("Could not get Supabase user for upload.");
-      }
-      const supabaseUserId = supabaseUser.id;
-
-      let photoUrl = state.currentUserProfile?.profilePhoto || user.imageUrl; // Start with existing photo
-
-      // 1. If a new photo is selected, upload it to Supabase Storage
-      if (profilePhoto) {
-        const sanitizedFileName = profilePhoto.name.replace(/[\s:\u202F]/g, '_').replace(/[^a-zA-Z0-9._-]/g, '');
-        // Use the Supabase user ID for the folder path to match RLS policy
-        const fileName = `${supabaseUserId}/${Date.now()}_${sanitizedFileName}`;
-        
-        const { error: uploadError } = await supabase.storage
-          .from('volunteer-photos')
-          .upload(fileName, profilePhoto, {
-            cacheControl: '3600',
-            upsert: true, // Overwrite file if it exists
-          });
-
-        if (uploadError) {
-          throw uploadError;
-        }
-
-        // 2. Get the public URL of the uploaded file
-        const { data: urlData } = supabase.storage
-          .from('volunteer-photos')
-          .getPublicUrl(fileName);
-        
-        if (!urlData || !urlData.publicUrl) {
-          throw new Error("Could not get public URL for uploaded photo.");
-        }
-        photoUrl = urlData.publicUrl;
-
-        // 3. (Optional but good practice) Update the user's profile in Clerk
-        await user.update({ imageUrl: photoUrl });
-      }
+      const supabaseUserId = user.id; // Use Clerk user ID
 
       // 4. Upsert the rest of the volunteer profile data into your 'volunteers' table
       const { skills, ...profileData } = formData;
@@ -157,7 +101,6 @@ const VolunteerProfile = () => {
       const profileDataForUpsert = {
         ...profileData,
         user_id: supabaseUserId, // Use the correct Supabase user ID
-        profile_photo_url: photoUrl, // Use the new URL
         rating: state.currentUserProfile?.rating || 5.0,
         total_bookings: state.currentUserProfile?.totalBookings || 0,
       };
@@ -228,24 +171,7 @@ const VolunteerProfile = () => {
                 </CardDescription> 
               </CardHeader> 
               <CardContent className = "space-y-4" >
-                <div className = "space-y-2" >
-                  <Label > Profile Photo </Label> 
-                  <div className = "flex items-center space-x-4" >
-                    <div className = "w-24 h-24 rounded-full bg-muted flex items-center justify-center overflow-hidden" > 
-                      {photoPreview ? ( 
-                        <img src = {photoPreview} alt = "Profile Preview" className = "w-full h-full object-cover" />
-                      ) : ( 
-                        <User className = "w-12 h-12 text-muted-foreground" />
-                      )} 
-                    </div> 
-                    <Input id = "photo-upload" type = "file" accept = "image/*" onChange = {handleFileChange} className = "hidden" />
-                    {/* ✅ FIX: Corrected the optional chaining syntax */}
-                    <Button type = "button" variant = "outline" onClick = {() => document.getElementById('photo-upload')?.click()} >
-                      <Upload className = "w-4 h-4 mr-2" /> 
-                      {photoPreview ? 'Change Photo' : 'Upload Photo'} 
-                    </Button> 
-                  </div> 
-                </div>
+
 
                 <div className = "grid md:grid-cols-2 gap-4" >
                   <div className = "space-y-2" >
